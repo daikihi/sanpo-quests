@@ -1,0 +1,458 @@
+[
+  {
+    "id": "waypoint-bakery-stop",
+    "title": "パン屋に立ち寄る",
+    "hintTitle": "焼きたての香りを辿る寄り道",
+    "description": "散歩の途中で街のパン屋に立ち寄って1品以上チェック（または購入）する。最大2軒まで加点。",
+    "category": "waypoint",
+    "familiarity": "any",
+    "scoringType": "bonus",
+    "baseBonus": 25,
+    "basePenalty": 0,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": [],
+    "evaluator": {
+      "kind": "manual",
+      "bonusLabel": "パン屋に立ち寄った",
+      "maxBonusApplications": 2
+    },
+    "tags": ["bakery", "food", "shop"],
+    "handoffHint": "bakery-stop"
+  },
+  {
+    "id": "waypoint-historic-site",
+    "title": "史跡・寺社・記念碑を巡る",
+    "hintTitle": "土地の記憶に触れるスポット",
+    "description": "地図や案内板で見つけた史跡・寺社・記念碑に立ち寄って由来を読む。最大3箇所まで加点。",
+    "category": "waypoint",
+    "familiarity": "any",
+    "scoringType": "bonus",
+    "baseBonus": 20,
+    "basePenalty": 0,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": [],
+    "evaluator": {
+      "kind": "manual",
+      "bonusLabel": "史跡に立ち寄った",
+      "maxBonusApplications": 3
+    },
+    "tags": ["history", "shrine", "culture"],
+    "handoffHint": "historic-site"
+  },
+  {
+    "id": "waypoint-park-bench",
+    "title": "公園のベンチで5分ひと息つく",
+    "hintTitle": "足を止めて街の音を聴く休憩",
+    "description": "見つけた公園のベンチに座って一息つき、周囲の景色を観察する。最大2回まで加点。",
+    "category": "waypoint",
+    "familiarity": "any",
+    "scoringType": "bonus",
+    "baseBonus": 15,
+    "basePenalty": 0,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": [],
+    "evaluator": {
+      "kind": "manual",
+      "bonusLabel": "公園ベンチで休憩した",
+      "maxBonusApplications": 2
+    },
+    "tags": ["park", "rest", "relax"],
+    "handoffHint": "park-bench"
+  },
+  {
+    "id": "waypoint-familiar-new-shop",
+    "title": "定番エリアの未訪問店を発見する",
+    "hintTitle": "見慣れた街角のまだ入っていない扉",
+    "description": "よく通る生活圏・定番エリアの中で、これまで入ったことのない個人店やカフェに立ち寄る。",
+    "category": "waypoint",
+    "familiarity": "familiar",
+    "scoringType": "bonus",
+    "baseBonus": 30,
+    "basePenalty": 0,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": ["time-area-unexplored-blocks"],
+    "evaluator": {
+      "kind": "manual",
+      "bonusLabel": "未訪問店を開拓した",
+      "maxBonusApplications": 2
+    },
+    "tags": ["familiar", "rediscovery", "shop"],
+    "handoffHint": "familiar-new-shop"
+  },
+  {
+    "id": "route-no-main-road",
+    "title": "大通り（片側2車線以上）を歩かない",
+    "hintTitle": "広い車道から一歩外れた道選び",
+    "description": "幹線道路や片側2車線以上の大通りを避け、生活道路や路地だけで歩く。横断のみ許可。違反ごとに減点、守り切れたら加点。",
+    "category": "route",
+    "familiarity": "any",
+    "scoringType": "hybrid",
+    "baseBonus": 35,
+    "basePenalty": 20,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": ["route-one-way"],
+    "evaluator": {
+      "kind": "manual",
+      "bonusLabel": "大通りを回避して歩けた",
+      "penaltyLabel": "大通りを歩いてしまった",
+      "maxBonusApplications": 1,
+      "maxPenaltyApplications": 5
+    },
+    "tags": ["backstreet", "route"],
+    "handoffHint": "avoid-main-road"
+  },
+  {
+    "id": "route-no-rail-crossing",
+    "title": "鉄道線路をクロスしない",
+    "hintTitle": "鉄のラインのこちら側だけで完結",
+    "description": "踏切・高架下・跨線橋を含め、鉄道線路の反対側へ渡らずにルートを組む。地図の鉄道網レイヤーを確認しながら歩く。",
+    "category": "route",
+    "familiarity": "any",
+    "scoringType": "hybrid",
+    "baseBonus": 40,
+    "basePenalty": 25,
+    "minDifficulty": "standard",
+    "supportedModes": ["solo", "pair"],
+    "excludes": ["route-no-river-parallel"],
+    "evaluator": {
+      "kind": "manual",
+      "bonusLabel": "線路を跨がず完走した",
+      "penaltyLabel": "線路を横断してしまった",
+      "maxBonusApplications": 1,
+      "maxPenaltyApplications": 4
+    },
+    "tags": ["rail", "map-layer", "route"],
+    "handoffHint": "no-rail-crossing"
+  },
+  {
+    "id": "route-no-river-parallel",
+    "title": "河川・水辺と並走しない",
+    "hintTitle": "水辺の誘惑を避ける内陸ルート",
+    "description": "川沿い・運河沿いの遊歩道を並走せず、橋を渡るか離れるルートを選ぶ。地図の河川レイヤーを目安にする。",
+    "category": "route",
+    "familiarity": "any",
+    "scoringType": "hybrid",
+    "baseBonus": 35,
+    "basePenalty": 20,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": ["route-no-rail-crossing"],
+    "evaluator": {
+      "kind": "manual",
+      "bonusLabel": "河川と並走せず完走した",
+      "penaltyLabel": "河川沿いを並走してしまった",
+      "maxBonusApplications": 1,
+      "maxPenaltyApplications": 4
+    },
+    "tags": ["river", "map-layer", "route"],
+    "handoffHint": "no-river-parallel"
+  },
+  {
+    "id": "route-one-way",
+    "title": "片道ウォークで別駅・別地点にゴールする",
+    "hintTitle": "来た道を引き返さない一筆書き",
+    "description": "スタート地点へ徒歩で戻らず、別の駅やバス停を目指して片道で完走する。",
+    "category": "route",
+    "familiarity": "any",
+    "scoringType": "bonus",
+    "baseBonus": 35,
+    "basePenalty": 0,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": ["route-no-main-road"],
+    "evaluator": {
+      "kind": "session_rule",
+      "requireCompletion": true,
+      "actionLabel": "片道完走を記録"
+    },
+    "tags": ["one-way", "transit"],
+    "handoffHint": "one-way-walk"
+  },
+  {
+    "id": "route-familiar-back-alleys",
+    "title": "いつもの通学・通勤ルートを1本も使わない",
+    "hintTitle": "記憶の地図を裏返す迂回作戦",
+    "description": "普段よく歩く生活動線を避け、1本隣の路地や初めての曲がり角だけを選んで進む。",
+    "category": "route",
+    "familiarity": "familiar",
+    "scoringType": "hybrid",
+    "baseBonus": 40,
+    "basePenalty": 15,
+    "minDifficulty": "standard",
+    "supportedModes": ["solo", "pair"],
+    "excludes": [],
+    "evaluator": {
+      "kind": "manual",
+      "bonusLabel": "裏道だけで完走した",
+      "penaltyLabel": "いつもの道に出てしまった",
+      "maxBonusApplications": 1,
+      "maxPenaltyApplications": 5
+    },
+    "tags": ["familiar", "alley", "detour"],
+    "handoffHint": "avoid-routine-roads"
+  },
+  {
+    "id": "constraint-max-stops",
+    "title": "立ち寄りは {maxStops} 箇所以内に抑える",
+    "hintTitle": "寄り道の回数にブレーキをかける",
+    "description": "店舗・施設・休憩スポットへの立ち寄りを {maxStops} 箇所以内に収める。上限を超えるごとに減点。",
+    "category": "constraint",
+    "familiarity": "any",
+    "scoringType": "penalty",
+    "baseBonus": 0,
+    "basePenalty": 15,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": [],
+    "evaluator": {
+      "kind": "counter",
+      "unitLabel": "箇所",
+      "actionLabel": "立ち寄りをカウント (+1)",
+      "maxAllowedCount": 3,
+      "maxAllowedCountParam": "maxStops"
+    },
+    "paramsByDifficulty": {
+      "light": { "maxStops": 4 },
+      "standard": { "maxStops": 3 },
+      "hard": { "maxStops": 2 }
+    },
+    "tags": ["stops", "limit"],
+    "handoffHint": "max-stops-limit"
+  },
+  {
+    "id": "constraint-municipality-border",
+    "title": "自治体境界を {maxCrossings} 回までしか踏まない",
+    "hintTitle": "区市町村の境目を意識する境界戦",
+    "description": "区境・市境などの自治体境界を跨ぐ回数を {maxCrossings} 回以内に抑える。上限を超過するごとに減点。",
+    "category": "constraint",
+    "familiarity": "any",
+    "scoringType": "penalty",
+    "baseBonus": 0,
+    "basePenalty": 20,
+    "minDifficulty": "standard",
+    "supportedModes": ["solo", "pair"],
+    "excludes": [],
+    "evaluator": {
+      "kind": "counter",
+      "unitLabel": "回",
+      "actionLabel": "境界横断をカウント (+1)",
+      "maxAllowedCount": 2,
+      "maxAllowedCountParam": "maxCrossings"
+    },
+    "paramsByDifficulty": {
+      "light": { "maxCrossings": 3 },
+      "standard": { "maxCrossings": 2 },
+      "hard": { "maxCrossings": 1 }
+    },
+    "tags": ["border", "municipality", "limit"],
+    "handoffHint": "municipality-border-limit"
+  },
+  {
+    "id": "constraint-no-convenience-store",
+    "title": "コンビニ・自販機利用は {maxUses} 回以内",
+    "hintTitle": "手軽な補給を縛るサバイバル散歩",
+    "description": "散歩中のコンビニや自動販売機の利用を {maxUses} 回以内に制限する。上限超過ごとに減点。",
+    "category": "constraint",
+    "familiarity": "any",
+    "scoringType": "penalty",
+    "baseBonus": 0,
+    "basePenalty": 15,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": [],
+    "evaluator": {
+      "kind": "counter",
+      "unitLabel": "回",
+      "actionLabel": "利用をカウント (+1)",
+      "maxAllowedCount": 1,
+      "maxAllowedCountParam": "maxUses"
+    },
+    "paramsByDifficulty": {
+      "light": { "maxUses": 2 },
+      "standard": { "maxUses": 1 },
+      "hard": { "maxUses": 0 }
+    },
+    "tags": ["convenience-store", "restraint"],
+    "handoffHint": "limit-convenience-store"
+  },
+  {
+    "id": "pace-look-up-architecture",
+    "title": "目線を上げて建物の意匠・看板を {targetFindings} 件見つける",
+    "hintTitle": "2階以上にある街のディテール探し",
+    "description": "普段見落としがちな建物の2階以上の装飾、レトロ看板、屋上構造物などを {targetFindings} 件見つけてカウントする。",
+    "category": "pace_style",
+    "familiarity": "any",
+    "scoringType": "bonus",
+    "baseBonus": 30,
+    "basePenalty": 0,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": [],
+    "evaluator": {
+      "kind": "counter",
+      "unitLabel": "件",
+      "actionLabel": "発見をカウント (+1)",
+      "targetCount": 3,
+      "targetCountParam": "targetFindings",
+      "maxBonusApplications": 1
+    },
+    "paramsByDifficulty": {
+      "light": { "targetFindings": 2 },
+      "standard": { "targetFindings": 3 },
+      "hard": { "targetFindings": 5 }
+    },
+    "tags": ["architecture", "observation", "look-up"],
+    "handoffHint": "look-up-architecture"
+  },
+  {
+    "id": "pace-color-scavenger",
+    "title": "テーマカラーを決めて街角の被写体を3つ見つける",
+    "hintTitle": "1つの色だけを追いかける視点変換",
+    "description": "出発前にテーマカラーを1色決め、その色が印象的な看板・植物・建築などを観察・記録する。",
+    "category": "pace_style",
+    "familiarity": "any",
+    "scoringType": "bonus",
+    "baseBonus": 25,
+    "basePenalty": 0,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": [],
+    "evaluator": {
+      "kind": "manual",
+      "bonusLabel": "テーマカラーの被写体を見つけた",
+      "maxBonusApplications": 3
+    },
+    "tags": ["observation", "color", "photo"],
+    "handoffHint": "color-scavenger"
+  },
+  {
+    "id": "pace-pair-turn-taking",
+    "title": "交差点ごとに交互に進行方向を選ぶ",
+    "hintTitle": "2人の直感を交互につなぐ即興ルート",
+    "description": "ペア専用。分岐や交差点に着いたら2人で交互に右・左・直進を指定して歩く。3セット達成ごとに加点。",
+    "category": "pace_style",
+    "familiarity": "any",
+    "scoringType": "bonus",
+    "baseBonus": 20,
+    "basePenalty": 0,
+    "minDifficulty": "light",
+    "supportedModes": ["pair"],
+    "excludes": [],
+    "evaluator": {
+      "kind": "manual",
+      "bonusLabel": "交互ルート選択を達成",
+      "maxBonusApplications": 3
+    },
+    "tags": ["pair", "turn-taking", "improvisation"],
+    "handoffHint": "pair-turn-taking"
+  },
+  {
+    "id": "time-area-unexplored-blocks",
+    "title": "未踏の街区・路地を {targetBlocks} 区画開拓する",
+    "hintTitle": "まだ足跡のないブロックを塗りつぶす",
+    "description": "これまで通ったことがない初めての街区・路地に足を踏み入れて {targetBlocks} 区画開拓する。",
+    "category": "time_area",
+    "familiarity": "unexplored",
+    "scoringType": "bonus",
+    "baseBonus": 40,
+    "basePenalty": 0,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": ["time-area-familiar-away", "waypoint-familiar-new-shop"],
+    "evaluator": {
+      "kind": "counter",
+      "unitLabel": "区画",
+      "actionLabel": "未踏区画を開拓 (+1)",
+      "targetCount": 3,
+      "targetCountParam": "targetBlocks",
+      "maxBonusApplications": 1
+    },
+    "paramsByDifficulty": {
+      "light": { "targetBlocks": 2 },
+      "standard": { "targetBlocks": 3 },
+      "hard": { "targetBlocks": 5 }
+    },
+    "tags": ["unexplored", "exploration"],
+    "handoffHint": "unexplored-blocks"
+  },
+  {
+    "id": "time-area-avoid-familiar",
+    "title": "よく通る場所・最寄り駅に近づかない",
+    "hintTitle": "生活圏の重力から抜け出す距離チェック",
+    "description": "登録済みの「よく通る場所・駅」の半径内に入らないように歩く。「現在地チェック」で圏内に入っていたら減点、圏外キープで加点。",
+    "category": "time_area",
+    "familiarity": "familiar",
+    "scoringType": "hybrid",
+    "baseBonus": 25,
+    "basePenalty": 25,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": ["time-area-familiar-away"],
+    "evaluator": {
+      "kind": "location_check",
+      "triggerWhen": "near",
+      "defaultRadiusMeters": 300,
+      "actionLabel": "現在地チェック（接近判定）",
+      "maxBonusApplications": 2,
+      "maxPenaltyApplications": 3
+    },
+    "tags": ["familiar", "geolocation", "avoid"],
+    "handoffHint": "avoid-familiar-spots"
+  },
+  {
+    "id": "time-area-familiar-away",
+    "title": "登録スポット圏外まで遠征チェックする",
+    "hintTitle": "いつもの半径を飛び出すワンショット判定",
+    "description": "登録済みの「よく通る場所・駅」すべてから離れた地点で「現在地チェック」を行い、普段と違う景色を開拓する。",
+    "category": "time_area",
+    "familiarity": "unexplored",
+    "scoringType": "bonus",
+    "baseBonus": 35,
+    "basePenalty": 0,
+    "minDifficulty": "standard",
+    "supportedModes": ["solo", "pair"],
+    "excludes": ["time-area-avoid-familiar", "time-area-unexplored-blocks"],
+    "evaluator": {
+      "kind": "location_check",
+      "triggerWhen": "away",
+      "defaultRadiusMeters": 500,
+      "actionLabel": "現在地チェック（圏外遠征）",
+      "maxBonusApplications": 2
+    },
+    "tags": ["unexplored", "geolocation", "expedition"],
+    "handoffHint": "away-from-familiar-spots"
+  },
+  {
+    "id": "time-area-time-limit",
+    "title": "{maxMinutes} 分以内に散歩を完走する",
+    "hintTitle": "時計と歩幅を合わせるタイムアタック",
+    "description": "スタートから {maxMinutes} 分以内に散歩を終了・完走すれば加点。制限時間を超過すると減点。",
+    "category": "time_area",
+    "familiarity": "any",
+    "scoringType": "hybrid",
+    "baseBonus": 35,
+    "basePenalty": 20,
+    "minDifficulty": "light",
+    "supportedModes": ["solo", "pair"],
+    "excludes": [],
+    "evaluator": {
+      "kind": "session_rule",
+      "maxDurationMinutes": 60,
+      "maxDurationMinutesParam": "maxMinutes",
+      "requireCompletion": true,
+      "actionLabel": "経過時間で完走判定"
+    },
+    "paramsByDifficulty": {
+      "light": { "maxMinutes": 75 },
+      "standard": { "maxMinutes": 60 },
+      "hard": { "maxMinutes": 45 }
+    },
+    "tags": ["time-limit", "pace"],
+    "handoffHint": "time-limit-finish"
+  }
+]
