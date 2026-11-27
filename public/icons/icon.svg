@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Sanpo Quests">
+  <rect width="512" height="512" rx="112" fill="#1b5e4b" />
+  <circle cx="256" cy="256" r="168" fill="none" stroke="#e6f2ee" stroke-width="20" stroke-dasharray="28 18" opacity="0.55" />
+  <path d="M138 346 C188 262, 232 300, 272 232 C304 176, 336 184, 376 146" fill="none" stroke="#7dd3fc" stroke-width="28" stroke-linecap="round" />
+  <circle cx="138" cy="346" r="24" fill="#fef3c7" stroke="#1b5e4b" stroke-width="8" />
+  <path d="M376 108 L404 176 L376 160 L348 176 Z" fill="#fbbf24" />
+</svg>
