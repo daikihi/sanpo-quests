@@ -240,4 +240,33 @@ describe('drawRules constraints and pinning', () => {
       calculateTotalScore(session.baseScore, session.progress),
     );
   });
+
+  it('draws up to 8 non-conflicting rules for challenger mode', () => {
+    const config: SessionConfig = {
+      ruleCount: 8,
+      difficulty: 'hard',
+      revealMode: 'open',
+      walkMode: 'solo',
+      excludedCategories: [],
+    };
+    const defMap = new Map(ALL_RULES.map((r) => [r.id, r]));
+
+    for (let seed = 1; seed <= 15; seed++) {
+      const drawn = drawRules(ALL_RULES, {
+        config,
+        rng: createSeededRng(seed),
+      });
+      expect(drawn).toHaveLength(8);
+      const ids = new Set(drawn.map((r) => r.ruleId));
+      expect(ids.size).toBe(8);
+
+      // Verify mutual excludes are still respected even beyond 5 categories
+      for (const rule of drawn) {
+        const def = defMap.get(rule.ruleId)!;
+        for (const excludedId of def.excludes) {
+          expect(ids.has(excludedId)).toBe(false);
+        }
+      }
+    }
+  });
 });

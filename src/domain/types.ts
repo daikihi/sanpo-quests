@@ -209,8 +209,13 @@ export interface RuleProgressState {
   history: RuleEventLogEntry[];
 }
 
+export const MIN_RULE_COUNT = 1;
+export const MAX_RULE_COUNT = 8;
+
+export type RuleCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+
 export interface SessionConfig {
-  ruleCount: 1 | 2 | 3;
+  ruleCount: RuleCount;
   difficulty: Difficulty;
   revealMode: RevealMode;
   walkMode: WalkMode;

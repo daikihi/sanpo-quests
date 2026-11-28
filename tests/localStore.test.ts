@@ -8,17 +8,20 @@ import {
   appendCompletedSession,
   clearActiveSession,
   createMemoryStorage,
+  deleteCustomRule,
   deleteFamiliarSpot,
   deleteSessionFromHistory,
   exportSessionJson,
   formatWalkMemoText,
   importSessionJson,
   loadActiveSession,
+  loadCustomRules,
   loadFamiliarSpots,
   loadRecentRuleIds,
   loadSessionHistory,
   recordRecentRuleIds,
   saveActiveSession,
+  upsertCustomRule,
   upsertFamiliarSpot,
 } from '../src/storage/localStore.ts';
 
@@ -117,6 +120,37 @@ describe('localStore FamiliarSpot CRUD', () => {
 
     deleteFamiliarSpot('spot-1', storage);
     expect(loadFamiliarSpots(storage)).toHaveLength(0);
+  });
+});
+
+describe('localStore custom rules CRUD', () => {
+  it('creates, updates, and deletes custom rules', () => {
+    const storage = createMemoryStorage();
+    const custom: RuleDefinition = {
+      id: 'custom-croquette',
+      title: '商店街でコロッケを買う',
+      hintTitle: '揚げたての誘惑',
+      description: '商店街の精肉店や惣菜屋でコロッケを1つ買う。',
+      category: 'waypoint',
+      familiarity: 'any',
+      scoringType: 'bonus',
+      baseBonus: 30,
+      basePenalty: 0,
+      minDifficulty: 'light',
+      supportedModes: ['solo', 'pair'],
+      excludes: [],
+      evaluator: { kind: 'manual', bonusLabel: 'コロッケを購入' },
+    };
+
+    upsertCustomRule(custom, storage);
+    expect(loadCustomRules(storage)).toHaveLength(1);
+    expect(loadCustomRules(storage)[0].tags).toContain('custom');
+
+    upsertCustomRule({ ...custom, baseBonus: 40 }, storage);
+    expect(loadCustomRules(storage)[0].baseBonus).toBe(40);
+
+    deleteCustomRule('custom-croquette', storage);
+    expect(loadCustomRules(storage)).toHaveLength(0);
   });
 });
 

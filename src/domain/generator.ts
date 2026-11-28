@@ -4,6 +4,7 @@ import {
   type Difficulty,
   type GeneratedSession,
   type ResolvedRule,
+  type RuleCount,
   type RuleDefinition,
   type RuleEvaluatorConfig,
   type RuleParams,
@@ -242,7 +243,7 @@ export function rerollSingleRule(
     ...options,
     config: {
       ...options.config,
-      ruleCount: currentRules.length as 1 | 2 | 3,
+      ruleCount: currentRules.length as RuleCount,
     },
     pinnedRules: pinnedTemporarily,
     excludeRuleIds: [target.ruleId],

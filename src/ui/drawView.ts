@@ -9,6 +9,7 @@ import {
   type GeneratedSession,
   type RevealMode,
   type RuleCategory,
+  type RuleCount,
   type SessionConfig,
   type WalkMode,
 } from '../domain/types.ts';
@@ -18,11 +19,13 @@ export interface DrawViewProps {
   config: SessionConfig;
   draftSession: GeneratedSession | null;
   familiarSpotCount: number;
+  totalRuleCount: number;
   onConfigChange: (next: SessionConfig) => void;
   onDraw: () => void;
   onTogglePin: (index: number) => void;
   onRerollOne: (index: number) => void;
   onStartWalk: () => void;
+  onOpenCatalog: () => void;
   onOpenSpots: () => void;
   onOpenImport: () => void;
 }
@@ -38,6 +41,7 @@ function renderSegmented<T extends string | number>(
   options: Array<{ value: T; title: string; sub?: string }>,
   selected: T,
   onSelect: (value: T) => void,
+  groupClass = 'seg-group',
 ): HTMLElement {
   const buttons = options.map((opt) => {
     const isSelected = opt.value === selected;
@@ -59,17 +63,37 @@ function renderSegmented<T extends string | number>(
 
   return el('fieldset', { class: 'control-group' }, [
     el('legend', { class: 'control-label' }, [label]),
-    el('div', { class: 'seg-group' }, buttons),
+    el('div', { class: groupClass }, buttons),
   ]);
 }
 
+const RULE_COUNT_OPTIONS: Array<{ value: RuleCount; title: string; sub: string }> = [
+  { value: 1, title: '1個', sub: 'ゆるめ' },
+  { value: 2, title: '2個', sub: '定番' },
+  { value: 3, title: '3個', sub: 'しっかり' },
+  { value: 4, title: '4個', sub: '挑戦' },
+  { value: 5, title: '5個', sub: '全カテゴリ' },
+  { value: 6, title: '6個', sub: 'ハード' },
+  { value: 7, title: '7個', sub: '超難関' },
+  { value: 8, title: '8個', sub: '限界突破' },
+];
+
 export function renderDrawView(props: DrawViewProps): HTMLElement {
-  const { config, draftSession, familiarSpotCount } = props;
+  const { config, draftSession, familiarSpotCount, totalRuleCount } = props;
 
   const settingsCard = el('section', { class: 'card' }, [
     el('div', { class: 'card__header' }, [
       el('h2', { class: 'card__title' }, ['散歩の条件をセット']),
       el('div', { class: 'toolbar' }, [
+        (() => {
+          const btn = el(
+            'button',
+            { type: 'button', class: 'btn btn--secondary btn--sm' },
+            [`ルール一覧 (${totalRuleCount})`],
+          );
+          btn.addEventListener('click', props.onOpenCatalog);
+          return btn;
+        })(),
         (() => {
           const btn = el(
             'button',
@@ -91,15 +115,12 @@ export function renderDrawView(props: DrawViewProps): HTMLElement {
       ]),
     ]),
 
-    renderSegmented<1 | 2 | 3>(
-      '縛り数',
-      [
-        { value: 1, title: '1個', sub: 'ゆるめ' },
-        { value: 2, title: '2個', sub: 'おすすめ' },
-        { value: 3, title: '3個', sub: 'やりごたえ' },
-      ],
+    renderSegmented<RuleCount>(
+      '縛り数（1〜8個）',
+      RULE_COUNT_OPTIONS,
       config.ruleCount,
       (ruleCount) => props.onConfigChange({ ...config, ruleCount }),
+      'seg-group seg-group--count8',
     ),
 
     renderSegmented<Difficulty>(

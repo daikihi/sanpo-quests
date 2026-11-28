@@ -267,6 +267,10 @@ textarea:focus-visible,
   gap: 0.45rem;
 }
 
+.seg-group--count8 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .seg-btn {
   border: 1px solid var(--border-subtle);
   background: var(--bg-page);
@@ -312,6 +316,12 @@ textarea:focus-visible,
   padding: 0.35rem 0.75rem;
   font-size: 0.8rem;
   font-weight: 600;
+}
+
+.chip--active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #ffffff;
 }
 
 .chip--excluded {
@@ -792,7 +802,8 @@ textarea:focus-visible,
 }
 
 .form-field input,
-.form-field textarea {
+.form-field textarea,
+.form-field select {
   inline-size: 100%;
   padding: 0.55rem 0.7rem;
   border-radius: var(--radius-sm);
@@ -804,6 +815,12 @@ textarea:focus-visible,
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.6rem;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
 }
 
 .form-row-inline {
@@ -838,6 +855,60 @@ dialog.modal-dialog {
   background: var(--bg-surface);
   color: var(--text-primary);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.24);
+}
+
+dialog.modal-dialog--wide {
+  inline-size: min(40rem, calc(100vw - 1.5rem));
+}
+
+.add-rule-details {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-page);
+  padding: 0.65rem 0.8rem;
+}
+
+.add-rule-summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.add-rule-form {
+  margin-top: 0.75rem;
+}
+
+.catalog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.catalog-item {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-page);
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.catalog-item__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.catalog-item__title {
+  font-size: 0.95rem;
+}
+
+.catalog-item__desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
 }
 
 dialog.modal-dialog:modal {

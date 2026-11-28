@@ -23,9 +23,11 @@ import type {
 import {
   appendCompletedSession,
   clearActiveSession,
+  deleteCustomRule,
   deleteFamiliarSpot,
   deleteSessionFromHistory,
   loadActiveSession,
+  loadCustomRules,
   loadFamiliarSpots,
   loadLastConfig,
   loadRecentRuleIds,
@@ -33,16 +35,20 @@ import {
   recordRecentRuleIds,
   saveActiveSession,
   saveLastConfig,
+  upsertCustomRule,
   upsertFamiliarSpot,
 } from './storage/localStore.ts';
 import { el, showToast } from './ui/dom.ts';
 import { renderDrawView } from './ui/drawView.ts';
-import { openImportModal, openSpotsModal } from './ui/modals.ts';
+import {
+  openImportModal,
+  openRuleCatalogModal,
+  openSpotsModal,
+} from './ui/modals.ts';
 import { mountPlayView, type MountedPlayView } from './ui/playView.ts';
 import { renderResultView } from './ui/resultView.ts';
 
-const ALL_RULES = rulesJson as RuleDefinition[];
-const RULE_DEF_MAP = new Map(ALL_RULES.map((r) => [r.id, r]));
+const DEFAULT_RULES = rulesJson as RuleDefinition[];
 
 type ActiveTab = 'draw' | 'play' | 'result';
 
@@ -54,6 +60,7 @@ interface AppState {
   history: GeneratedSession[];
   selectedResultId: string | null;
   familiarSpots: FamiliarSpot[];
+  customRules: RuleDefinition[];
   showDirectionIcons: boolean;
 }
 
@@ -76,8 +83,13 @@ const state: AppState = {
   history: savedHistory,
   selectedResultId: savedHistory[0]?.id ?? null,
   familiarSpots: loadFamiliarSpots(),
+  customRules: loadCustomRules(),
   showDirectionIcons: false, // Default OFF per specification
 };
+
+function getAllRules(): RuleDefinition[] {
+  return [...state.customRules, ...DEFAULT_RULES];
+}
 
 let mountedPlayView: MountedPlayView | null = null;
 
@@ -94,8 +106,9 @@ function handleConfigChange(nextConfig: SessionConfig): void {
 
   // Re-resolve pinned/existing draft rules to reflect difficulty or revealMode change
   if (state.draftSession) {
+    const defMap = new Map(getAllRules().map((r) => [r.id, r]));
     const resolved = state.draftSession.rules.map((r) => {
-      const def = RULE_DEF_MAP.get(r.ruleId);
+      const def = defMap.get(r.ruleId);
       return def ? resolveRule(def, nextConfig.difficulty, r.pinned) : r;
     });
     const nextProgress = { ...state.draftSession.progress };
@@ -125,7 +138,7 @@ function handleDraw(): void {
     : [];
   const recentRuleIds = loadRecentRuleIds();
 
-  const drawn = createGeneratedSession(ALL_RULES, {
+  const drawn = createGeneratedSession(getAllRules(), {
     config: state.config,
     pinnedRules,
     recentRuleIds,
@@ -158,7 +171,7 @@ function handleRerollOne(index: number): void {
   if (!state.draftSession) return;
   const recentRuleIds = loadRecentRuleIds();
   const nextRules = rerollSingleRule(
-    ALL_RULES,
+    getAllRules(),
     state.draftSession.rules,
     index,
     {
@@ -306,6 +319,22 @@ function handleDeleteHistory(sessionId: string): void {
   renderApp();
 }
 
+function handleOpenCatalog(): void {
+  openRuleCatalogModal({
+    getDefaultRules: () => DEFAULT_RULES,
+    getCustomRules: () => state.customRules,
+    currentDifficulty: state.config.difficulty,
+    onAddCustomRule: (rule) => {
+      state.customRules = upsertCustomRule(rule);
+      renderApp();
+    },
+    onDeleteCustomRule: (ruleId) => {
+      state.customRules = deleteCustomRule(ruleId);
+      renderApp();
+    },
+  });
+}
+
 function handleOpenSpots(): void {
   openSpotsModal({
     getSpots: () => state.familiarSpots,
@@ -387,11 +416,13 @@ function renderApp(): void {
         config: state.config,
         draftSession: state.draftSession,
         familiarSpotCount: state.familiarSpots.length,
+        totalRuleCount: getAllRules().length,
         onConfigChange: handleConfigChange,
         onDraw: handleDraw,
         onTogglePin: handleTogglePin,
         onRerollOne: handleRerollOne,
         onStartWalk: handleStartWalk,
+        onOpenCatalog: handleOpenCatalog,
         onOpenSpots: handleOpenSpots,
         onOpenImport: handleOpenImport,
       }),

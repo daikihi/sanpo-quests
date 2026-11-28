@@ -1,5 +1,7 @@
 import {
   DIFFICULTY_LABELS,
+  MAX_RULE_COUNT,
+  MIN_RULE_COUNT,
   REVEAL_MODE_LABELS,
   WALK_MODE_LABELS,
   type Difficulty,
@@ -7,6 +9,7 @@ import {
   type GeneratedSession,
   type RevealMode,
   type RuleCategory,
+  type RuleDefinition,
   type SessionConfig,
   type WalkMode,
 } from '../domain/types.ts';
@@ -28,6 +31,7 @@ export const STORAGE_KEYS = {
   SESSION_HISTORY: 'sanpo-quests:session-history',
   RECENT_RULE_IDS: 'sanpo-quests:recent-rule-ids',
   FAMILIAR_SPOTS: 'sanpo-quests:familiar-spots',
+  CUSTOM_RULES: 'sanpo-quests:custom-rules',
   LAST_CONFIG: 'sanpo-quests:last-config',
 } as const;
 
@@ -225,6 +229,58 @@ export function deleteFamiliarSpot(
   return next;
 }
 
+// --- Custom Rules CRUD ---
+
+export function loadCustomRules(storage?: StorageLike): RuleDefinition[] {
+  const raw = readJson<unknown>(
+    resolveStorage(storage),
+    STORAGE_KEYS.CUSTOM_RULES,
+    [],
+  );
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(isValidRuleDefinition);
+}
+
+export function upsertCustomRule(
+  rule: RuleDefinition,
+  storage?: StorageLike,
+): RuleDefinition[] {
+  if (!isValidRuleDefinition(rule)) {
+    throw new Error('Invalid custom RuleDefinition');
+  }
+  const store = resolveStorage(storage);
+  const current = loadCustomRules(store);
+  const idx = current.findIndex((item) => item.id === rule.id);
+  const normalized: RuleDefinition = {
+    ...rule,
+    title: rule.title.trim(),
+    hintTitle: rule.hintTitle.trim() || rule.title.trim(),
+    description: rule.description.trim() || rule.title.trim(),
+    baseBonus: Math.max(0, Math.round(Number(rule.baseBonus))),
+    basePenalty: Math.max(0, Math.round(Math.abs(Number(rule.basePenalty)))),
+    excludes: Array.isArray(rule.excludes) ? [...rule.excludes] : [],
+    tags: Array.from(new Set([...(rule.tags ?? []), 'custom'])),
+  };
+
+  const next =
+    idx >= 0
+      ? current.map((item, i) => (i === idx ? normalized : item))
+      : [normalized, ...current];
+
+  writeJson(store, STORAGE_KEYS.CUSTOM_RULES, next);
+  return next;
+}
+
+export function deleteCustomRule(
+  ruleId: string,
+  storage?: StorageLike,
+): RuleDefinition[] {
+  const store = resolveStorage(storage);
+  const next = loadCustomRules(store).filter((rule) => rule.id !== ruleId);
+  writeJson(store, STORAGE_KEYS.CUSTOM_RULES, next);
+  return next;
+}
+
 // --- Last Session Config ---
 
 export function saveLastConfig(
@@ -357,9 +413,62 @@ function isValidFamiliarSpot(value: unknown): value is FamiliarSpot {
   );
 }
 
+function isValidRuleDefinition(value: unknown): value is RuleDefinition {
+  if (!isRecord(value)) return false;
+  if (typeof value.id !== 'string' || value.id.trim().length === 0) return false;
+  if (typeof value.title !== 'string' || value.title.trim().length === 0) {
+    return false;
+  }
+  if (typeof value.hintTitle !== 'string') return false;
+  if (typeof value.description !== 'string') return false;
+  if (!VALID_CATEGORIES.includes(value.category as RuleCategory)) return false;
+  if (
+    value.familiarity !== 'unexplored' &&
+    value.familiarity !== 'familiar' &&
+    value.familiarity !== 'any'
+  ) {
+    return false;
+  }
+  if (
+    value.scoringType !== 'bonus' &&
+    value.scoringType !== 'penalty' &&
+    value.scoringType !== 'hybrid'
+  ) {
+    return false;
+  }
+  if (typeof value.baseBonus !== 'number' || !Number.isFinite(value.baseBonus)) {
+    return false;
+  }
+  if (
+    typeof value.basePenalty !== 'number' ||
+    !Number.isFinite(value.basePenalty)
+  ) {
+    return false;
+  }
+  if (!VALID_DIFFICULTIES.includes(value.minDifficulty as Difficulty)) {
+    return false;
+  }
+  if (
+    !Array.isArray(value.supportedModes) ||
+    value.supportedModes.length === 0 ||
+    !value.supportedModes.every((m) => VALID_WALK_MODES.includes(m as WalkMode))
+  ) {
+    return false;
+  }
+  if (!isRecord(value.evaluator) || typeof value.evaluator.kind !== 'string') {
+    return false;
+  }
+  return true;
+}
+
 function isValidSessionConfig(value: unknown): value is SessionConfig {
   if (!isRecord(value)) return false;
-  if (value.ruleCount !== 1 && value.ruleCount !== 2 && value.ruleCount !== 3) {
+  if (
+    typeof value.ruleCount !== 'number' ||
+    !Number.isInteger(value.ruleCount) ||
+    value.ruleCount < MIN_RULE_COUNT ||
+    value.ruleCount > MAX_RULE_COUNT
+  ) {
     return false;
   }
   if (!VALID_DIFFICULTIES.includes(value.difficulty as Difficulty)) return false;
